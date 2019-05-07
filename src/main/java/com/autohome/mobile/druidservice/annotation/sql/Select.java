@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 public @interface Select {
     String value();
     String dynamicReplaceMark() default "#{dynamic}";
+    Class[] resultTypes() default {};
+    String[] columnLabels() default {};
 }

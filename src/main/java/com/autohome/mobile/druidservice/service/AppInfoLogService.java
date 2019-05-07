@@ -19,4 +19,8 @@ public class AppInfoLogService{
 
         return appInfoLogDao.getApiList(appInfoLog);
     }
+
+    public List<Map<String, Object>> getSampleData(AppInfoLog appInfoLog) throws NoSuchMethodException, NoSuchFieldException, AnnotationException, IllegalAccessException {
+        return appInfoLogDao.getSampleData(appInfoLog);
+    }
 }
