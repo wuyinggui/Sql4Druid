@@ -1,5 +1,6 @@
 package com.wyg.druidservice.proxy;
 
+import com.autohome.mobile.druidservice.dao.AppInfoLogDao;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -22,17 +23,16 @@ import java.util.List;
 public class MyRegistryBean implements ApplicationContextAware, BeanDefinitionRegistryPostProcessor {
 
     private ApplicationContext ctx;
-    @Value("com.wyg.druidservice.dao")
-    private String scanPackage;
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
     }
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
         // 需要被代理的接口
+        String interfacePackage = ctx.getEnvironment().getProperty("sql.scan.package");
         Class[] subClasses = null;
         try {
-            subClasses = getClasses(scanPackage);
+            subClasses = getClasses(interfacePackage);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
