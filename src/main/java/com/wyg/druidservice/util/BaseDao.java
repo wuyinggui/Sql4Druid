@@ -1,15 +1,14 @@
-package com.autohome.mobile.druidservice.util;
+package com.wyg.druidservice.util;
 
-import com.autohome.mobile.druidservice.annotation.Column;
-import com.autohome.mobile.druidservice.annotation.sql.Select;
-import com.autohome.mobile.druidservice.dao.BaseDaoInterface;
-import com.autohome.mobile.druidservice.exception.AnnotationException;
+import com.wyg.druidservice.annotation.Column;
+import com.wyg.druidservice.annotation.sql.Select;
+import com.wyg.druidservice.exception.AnnotationException;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,15 +22,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
-public class BaseDao<T> {
+public class BaseDao {
     @Autowired
     private HikariDataSource hikariDataSource;
-    @Autowired
-    private ServiceGroupService serviceGroupService;
-    public List<Map<String,Object>> handleSearch(BaseDaoInterface baseDaoInterface,String methodName, T t) throws NoSuchMethodException, AnnotationException, IllegalAccessException, NoSuchFieldException {
+    public List<Map<String,Object>> handleSearch(Class targetClass,String methodName, Object t) throws NoSuchMethodException, AnnotationException, IllegalAccessException, NoSuchFieldException {
         Class clazz = t.getClass();
-        Method method = baseDaoInterface.getClass().getDeclaredMethod(methodName, clazz);
-
+        Method method = targetClass.getDeclaredMethod(methodName, clazz);
+        System.out.println(method.getName()+"    " + method.getDeclaredAnnotations().length);
+        for (Annotation declaredAnnotation : method.getDeclaredAnnotations()) {
+            System.out.println(declaredAnnotation.annotationType());
+        }
         if (!method.isAnnotationPresent(Select.class)){
             throw new AnnotationException("select annotation not found ...");
         }
@@ -91,30 +91,9 @@ public class BaseDao<T> {
                 if ("like".equals(columnOperator)){
                     buffer.append(" \"" + referColumn + "\" like '%"+fieldValue+"%' and ");
                 }else if ("in".equals(columnOperator)){
-                    if ("module".equals(referColumn)){
-                        Field platformField = t.getClass().getDeclaredField("platform");
-                        platformField.setAccessible(true);
-                        String platform = platformField.get(t).toString();
-                        Integer platformValue = "".equals(platform) ? null : new Integer(platform);
-                        List<String> pluginNameList = serviceGroupService.getPluginName(fieldValue.toString(), platformValue);
-                        if (pluginNameList != null && !pluginNameList.isEmpty()){
-                            StringBuffer moduleBuffer = new StringBuffer();
-                            moduleBuffer.append(" \"" + referColumn + "\" in (");
-                            for (int i = 0; i < pluginNameList.size(); i++) {
-                                if (i != pluginNameList.size()-1){
-                                    moduleBuffer.append("'" + pluginNameList.get(i) + "',");
-                                }else{
-                                    moduleBuffer.append("'" + pluginNameList.get(i) + "'");
-                                }
-                            }
-                            moduleBuffer.append(") and ");
-                            buffer.append(moduleBuffer.toString());
-                        }
-                    }else{
-                        fieldValue = fieldValue.toString().replaceAll(",","','");
-                        fieldValue = "('" + fieldValue + "')";
-                        buffer.append(" \"" + referColumn + "\" in "+fieldValue+" and ");
-                    }
+                    fieldValue = fieldValue.toString().replaceAll(",","','");
+                    fieldValue = "('" + fieldValue + "')";
+                    buffer.append(" \"" + referColumn + "\" in "+fieldValue+" and ");
                 }
             }
 

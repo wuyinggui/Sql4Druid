@@ -1,4 +1,4 @@
-package com.autohome.mobile.druidservice.exception;
+package com.wyg.druidservice.exception;
 
 public class AnnotationException extends Exception {
     public AnnotationException() {

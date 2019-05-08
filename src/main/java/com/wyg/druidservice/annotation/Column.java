@@ -1,4 +1,4 @@
-package com.autohome.mobile.druidservice.annotation;
+package com.wyg.druidservice.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

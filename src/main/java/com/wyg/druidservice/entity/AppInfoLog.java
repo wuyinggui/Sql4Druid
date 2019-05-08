@@ -1,6 +1,6 @@
-package com.autohome.mobile.druidservice.entity;
+package com.wyg.druidservice.entity;
 
-import com.autohome.mobile.druidservice.annotation.Column;
+import com.wyg.druidservice.annotation.Column;
 
 
 public class AppInfoLog {
