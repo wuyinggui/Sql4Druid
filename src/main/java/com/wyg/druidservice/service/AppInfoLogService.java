@@ -17,8 +17,4 @@ public class AppInfoLogService{
     public List<Map<String,Object>> getApiList(AppInfoLog appInfoLog) throws Exception {
         return appInfoLogDao.getApiList(appInfoLog);
     }
-
-    public List<Map<String, Object>> dateHistogramData(AppInfoLog appInfoLog) throws Exception {
-        return appInfoLogDao.dateHistogramData(appInfoLog);
-    }
 }
